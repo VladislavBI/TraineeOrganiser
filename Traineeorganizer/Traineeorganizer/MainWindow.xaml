@@ -1,0 +1,21 @@
+﻿<Window x:Class="Traineeorganizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:View="clr-namespace:Traineeorganizer.View"
+        Title="MainWindow" Height="925.718" Width="1725.325" WindowState="Maximized" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40px"/>
+            <RowDefinition />         
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="1" Grid.ColumnSpan="10" >
+            <TabItem Header="Главное окно">
+                <View:MainGridView></View:MainGridView>
+            </TabItem>
+            <TabItem Header="Все задачи">
+                <View:AllTasksView></View:AllTasksView>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>

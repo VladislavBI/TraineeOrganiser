@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="Traineeorganizer.View.AllTasksView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="1500" d:DesignWidth="2000">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <DataGrid  ItemsSource="{Binding Path=altVM.AMVDateTable}" AutoGenerateColumns="False">
+            <DataGrid.Columns >
+                <DataGridTextColumn Header="Имя" Binding="{Binding Path=Имя}" Width="*"/>
+                <DataGridTextColumn Header="Тема" Binding="{Binding Path=Тема}"  Width="*"/>
+                <DataGridTextColumn Header="Всего очков" Binding="{Binding Path=Всего очков}"  Width="*"/>
+                <DataGridTextColumn Header="Приоритет" Binding="{Binding Path=Приоритет}"  Width="*"/>
+                <DataGridCheckBoxColumn Header="Статус" Binding="{Binding Path=Статус}"  Width="*"/>
+            </DataGrid.Columns>
+            
+        </DataGrid>
+        <DataGrid  Grid.Row="1" Grid.RowSpan="2"/>
+
+        <Grid Grid.Column="1" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Фильтр" VerticalAlignment="Center"/>
+
+            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Тема" VerticalAlignment="Center" Grid.Row="1"/>
+            <ComboBox Name="ThemeCB" HorizontalAlignment="Center"  VerticalAlignment="Center" Grid.Row="2"/>
+
+            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Тема" VerticalAlignment="Center" Grid.Row="3"/>
+            <ComboBox Name="PriorCB" HorizontalAlignment="Center"  VerticalAlignment="Center" Grid.Row="4"/>
+
+            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Тема" VerticalAlignment="Center" Grid.Row="5"/>
+            <ComboBox Name="ActiveCB" HorizontalAlignment="Center"  VerticalAlignment="Center" Grid.Row="6"/>
+            
+            <Button Content="Поиск" HorizontalAlignment="Left" Margin="20,0,0,0" Grid.Row="8" VerticalAlignment="Center" Width="75"/>
+            <Button Content="Сбросить" HorizontalAlignment="Right" Margin="0,0,20,0" Grid.Row="8" VerticalAlignment="Center" Width="75"/>
+
+        </Grid>
+
+        <StackPanel Grid.Column="1" Grid.Row="2" >
+            <Button Content="Добавить" Margin="20" Height="30"/>
+            <Button Content="Измменить" Margin="20" Height="30"/>
+            <Button Content="Удалить" Margin="20" Height="30"/>
+
+
+        </StackPanel>
+
+
+
+    </Grid>
+</UserControl>
