@@ -10,21 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Traineeorganizer.View
 {
     /// <summary>
-    /// Interaction logic for AllTasksView.xaml
+    /// Interaction logic for EditingTask.xaml
     /// </summary>
-    public partial class AllTasksView : UserControl
+    public partial class EditingTask : Window
     {
-        public AllTasksView()
+        public EditingTask()
         {
             InitializeComponent();
         }
-
-       
     }
 }

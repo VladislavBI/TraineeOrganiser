@@ -7,48 +7,150 @@ using System.Threading.Tasks;
 using Traineeorganizer.Model;
 using System.Data.Entity;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using Traineeorganizer.Command;
+using System.Windows;
+using Traineeorganizer.View;
+using Traineeorganizer.Infrastructure;
 
 namespace Traineeorganizer.ModelView
 {
     class AllItViewModel:BaseViewModel
     {
-        public DataTable AMVDateTable { get; set; }
+        #region Prop
+        AllTasks at;
+        public DataTable AMVDateTable 
+        { get{return at.amvDateTable;}
+            set
+            {
+                if(at.amvDateTable!=value)
+                    at.amvDateTable=value;
+                OnPropertyChanged("AMVDateTable");
+            }
+        }
 
-        private string selectedThem;
-        public string SelectedThem
+
+        #region CheckBox
+
+        public bool ChBTh
         {
-            get { return selectedThem; }
+            get { 
+                return at.chBTh; }
             set 
             {
-                selectedThem = value;
-                OnPropertyChanged("Them");
+                if (at.chBTh!=value)
+                {
+                    at.chBTh = value;
+                    OnPropertyChanged("ChBTh");
+                }
+            }
+        }
+
+        public bool ChBPr
+        {
+            get
+            {
+                return at.chBPr;
+            }
+            set
+            {
+                if (at.chBPr != value)
+                {
+                    at.chBPr = value;
+                    OnPropertyChanged("ChBPr");
+                }
+            }
+        }
+
+        public bool ChBAc
+        {
+            get
+            {
+                return at.chBAc;
+            }
+            set
+            {
+                if (at.chBAc != value)
+                {
+                    at.chBAc = value;
+                    OnPropertyChanged("ChBAc");
+                }
+            }
+        }
+
+        #endregion
+        public List<string> ThemesList { get; set; }
+
+        public string SelectedThem
+        {
+            get { return at.selectedThem; }
+            set 
+            {
+                at.selectedThem = value;
+                OnPropertyChanged("SelectedThem");
             }
         }
        
-        private Priority selectedPrior;
         public Priority SelectedPrior
         {
-            get { return selectedPrior; }
+            get { return at.selectedPrior; }
             set 
             {
-                selectedPrior = value;
-                OnPropertyChanged("Prior");
+                at.selectedPrior = value;
+                OnPropertyChanged("SelectedPrior");
             }
         }
 
-        private string selectedActive;
         public string SelectedActive
         {
-            get { return selectedActive; }
+            get { return at.selectedActive; }
             set 
             {
-                selectedActive = value;
-                OnPropertyChanged("Active");
+                at.selectedActive = value;
+                OnPropertyChanged("SelectedActive");
             }
         }
-          
-        
-        public AllItViewModel()
+
+        public int DGPsSelectedIndex
+        {
+            get 
+            {
+                return at.dgPsSelectedIndex; 
+            }
+            set
+            {
+                if (at.dgPsSelectedIndex!= value)
+                 at.dgPsSelectedIndex = value;
+                OnPropertyChanged("DGPsSelectedIndex");
+            }
+        }
+
+        public ICommand filterCommand { get; set; }
+        public ICommand clearFilterCommand { get; set; }
+        public ICommand AddTaskCommand { get; set; }
+        public ICommand EditTaskCommand { get; set; }
+        public ICommand RemoveTaskCommand { get; set; }
+        #endregion
+
+        public AllItViewModel(AllTasks task)
+        {
+
+            filterCommand = new CommandNP(arg => FilterMethod());
+            clearFilterCommand = new CommandNP(arg => ClearFilterMethod());
+            AddTaskCommand = new CommandNP(arg => AddTaskMethod());
+            EditTaskCommand = new CommandNP(arg => EditTaskMethod());
+            RemoveTaskCommand = new CommandNP(arg => RemoveTaskMethod());
+
+            at = task;
+
+            CreateDataTable();
+            CreateLists(true);
+
+            DelegateClass.RefreshDataGridHandler = new DelegateClass.RefreshDataGrid(ClearFilterMethod);
+  
+        }
+       
+        void CreateDataTable()
         {
             AMVDateTable = new DataTable();
             AMVDateTable.Columns.Add("Имя");
@@ -56,38 +158,104 @@ namespace Traineeorganizer.ModelView
             AMVDateTable.Columns.Add("Всего очков", typeof(int));
             AMVDateTable.Columns.Add("Приоритет", typeof(Priority));
             AMVDateTable.Columns.Add("Статус", typeof(bool));
-
-            CreateList(true);
         }
-
-        void CreateList(bool all)
+        void CreateLists(bool all)
         {
             using (TraineeContext tr=new TraineeContext())
             {
                 tr.TrTasks.Load();
                 tr.Themes.Load();
                 var temp=tr.TrTasks.Local;
-               /* if (!all)
-                {
-                    temp=temp.Where(p=>p.Th.Name==)
-                }*/
+                ThemesList = new List<string>();
 
-                FillDataTable(temp);
+                foreach (var item in tr.Themes)
+                {
+                    ThemesList.Add(item.Name);
+                }
+
+                if (!all)
+                {
+                    FilterListCreate(tr);
+                }
+               
+
+                else
+                    FillDataTable(temp);
             }
         }
 
-        void FillDataTable(ObservableCollection<TrTask> t)
+        void FilterListCreate(TraineeContext tr)
         {
-           foreach (var tmp in t)
-           {
-               DataRow row = AMVDateTable.NewRow();
-               row[0] = tmp.Name;
-               row[1] = tmp.Th.Name;
-               row[2] = tmp.Th.Points;
-               row[3] = tmp.Prior;
-               row[4] = tmp.Active;
-               AMVDateTable.Rows.Add(row);
-           }
+            IEnumerable<TrTask> temp2=tr.TrTasks.Where(p=>true);
+
+            if(ChBTh)
+                temp2 = tr.TrTasks.Where(p => p.Th.Name == SelectedThem);
+
+            if(ChBPr)
+                temp2 = temp2.Where(p => p.Prior == SelectedPrior);
+           
+            if (ChBAc)
+            {
+                bool d = SelectedActive.Contains("Активно") ? true : false;
+                temp2 = temp2.Where(p => p.Active == d);
+            }
+
+
+            FillDataTable(temp2);
         }
+
+        void FillDataTable(IEnumerable<TrTask> t)
+        {
+            AMVDateTable.Rows.Clear();
+            foreach (var tmp in t)
+            {
+                DataRow row = AMVDateTable.NewRow();
+                row[0] = tmp.Name;
+                row[1] = tmp.Th.Name;
+                row[2] = tmp.Th.Points;
+                row[3] = tmp.Prior;
+                row[4] = tmp.Active;
+                AMVDateTable.Rows.Add(row);
+            }
+        }
+
+        void ChBToFalse()
+        {
+            this.ChBAc = false;
+            this.ChBPr = false;
+            this.ChBTh = false;
+        }
+        #region Command
+        void FilterMethod()
+        {
+            CreateLists(false);
+        }
+
+        void ClearFilterMethod()
+        {
+            CreateLists(true);
+            ChBToFalse();
+            
+        }
+
+        void AddTaskMethod()
+        {
+            EditTheory View = new EditTheory();
+            EditTheoryModelView modelView = new EditTheoryModelView();
+            View.DataContext = modelView;
+            View.ShowDialog();
+
+        }
+
+        void EditTaskMethod()
+        {
+            //Edit method - new more windows
+        }
+        void RemoveTaskMethod()
+        {
+            DGPsSelectedIndex = 0;
+            //RemoveMethod - wait for further realization
+        }
+        #endregion
     }
 }

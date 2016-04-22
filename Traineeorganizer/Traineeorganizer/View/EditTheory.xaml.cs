@@ -10,21 +10,23 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Traineeorganizer.View
 {
     /// <summary>
-    /// Interaction logic for AllTasksView.xaml
+    /// Interaction logic for EditTheory.xaml
     /// </summary>
-    public partial class AllTasksView : UserControl
+    public partial class EditTheory : Window
     {
-        public AllTasksView()
+        public EditTheory()
         {
             InitializeComponent();
         }
 
-       
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

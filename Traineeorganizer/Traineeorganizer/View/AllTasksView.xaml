@@ -3,9 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             
+             xmlns:Model="clr-namespace:Traineeorganizer.Model"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="1500" d:DesignWidth="2000">
-    <Grid>
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="PriorityEnum" MethodName="GetValues"  
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="Model:Priority"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    
+    <Grid  DataContext="{Binding altVM}">
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
@@ -15,16 +27,17 @@
             <ColumnDefinition Width="5*"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <DataGrid  ItemsSource="{Binding Path=altVM.AMVDateTable}" AutoGenerateColumns="False">
+        <DataGrid  ItemsSource="{Binding Path=AMVDateTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" SelectedIndex="{Binding DGPsSelectedIndex, Mode=TwoWay}" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" >
             <DataGrid.Columns >
-                <DataGridTextColumn Header="Имя" Binding="{Binding Path=Имя}" Width="*"/>
-                <DataGridTextColumn Header="Тема" Binding="{Binding Path=Тема}"  Width="*"/>
-                <DataGridTextColumn Header="Всего очков" Binding="{Binding Path=Всего очков}"  Width="*"/>
-                <DataGridTextColumn Header="Приоритет" Binding="{Binding Path=Приоритет}"  Width="*"/>
-                <DataGridCheckBoxColumn Header="Статус" Binding="{Binding Path=Статус}"  Width="*"/>
+                <DataGridTextColumn Header="Имя" Binding="{Binding Path=Имя}" Width="*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Тема" Binding="{Binding Path=Тема}"  Width="*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Всего очков" Binding="{Binding Path=Всего очков}"  Width="*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Приоритет" Binding="{Binding Path=Приоритет}"  Width="*" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="Статус" Binding="{Binding Path=Статус}"  Width="*" IsReadOnly="True"/>
             </DataGrid.Columns>
             
         </DataGrid>
+        
         <DataGrid  Grid.Row="1" Grid.RowSpan="2"/>
 
         <Grid Grid.Column="1" Grid.RowSpan="2">
@@ -43,23 +56,46 @@
             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Фильтр" VerticalAlignment="Center"/>
 
             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Тема" VerticalAlignment="Center" Grid.Row="1"/>
-            <ComboBox Name="ThemeCB" HorizontalAlignment="Center"  VerticalAlignment="Center" Grid.Row="2"/>
-
-            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Тема" VerticalAlignment="Center" Grid.Row="3"/>
-            <ComboBox Name="PriorCB" HorizontalAlignment="Center"  VerticalAlignment="Center" Grid.Row="4"/>
-
-            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Тема" VerticalAlignment="Center" Grid.Row="5"/>
-            <ComboBox Name="ActiveCB" HorizontalAlignment="Center"  VerticalAlignment="Center" Grid.Row="6"/>
+            <StackPanel Grid.Row="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding ChBTh, Mode=TwoWay}"/>
+                <ComboBox Name="ThemeCB"   ItemsSource="{Binding ThemesList}"
+                SelectedValue="{Binding SelectedThem, Mode=OneWayToSource}"                   
+                IsSynchronizedWithCurrentItem="true"
+            />
+            </StackPanel>
             
-            <Button Content="Поиск" HorizontalAlignment="Left" Margin="20,0,0,0" Grid.Row="8" VerticalAlignment="Center" Width="75"/>
-            <Button Content="Сбросить" HorizontalAlignment="Right" Margin="0,0,20,0" Grid.Row="8" VerticalAlignment="Center" Width="75"/>
+            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Проиритет" VerticalAlignment="Center" Grid.Row="3"/>
+
+            <StackPanel Grid.Row="4" HorizontalAlignment="Center"  VerticalAlignment="Center" Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding ChBPr, Mode=OneWayToSource}"/>
+            <ComboBox Name="PriorCB" ItemsSource="{Binding Source={StaticResource PriorityEnum}}"
+                      SelectedValue="{Binding SelectedPrior, Mode=OneWayToSource}"
+                      IsSynchronizedWithCurrentItem="True"
+                      />
+            </StackPanel>
+            
+            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Тема" VerticalAlignment="Center" Grid.Row="5"/>
+            
+            <StackPanel Grid.Row="6" HorizontalAlignment="Center"  VerticalAlignment="Center" Orientation="Horizontal">
+                <CheckBox  IsChecked="{Binding ChBAc, Mode=TwoWay}"/>
+                <ComboBox Name="ActiveCB" HorizontalAlignment="Center"  VerticalAlignment="Center" Grid.Row="6" SelectedIndex="0"
+                          SelectedValue="{Binding SelectedActive, Mode=OneWayToSource}"
+                          IsSynchronizedWithCurrentItem="True"
+                          >
+                    <ComboBoxItem>Активно</ComboBoxItem> 
+                    <ComboBoxItem>Неактивно</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            
+            <Button Content="Поиск" HorizontalAlignment="Left" Margin="20,0,0,0" Grid.Row="8" VerticalAlignment="Center" Width="75" Command="{Binding filterCommand}"/>
+            <Button Content="Сбросить" HorizontalAlignment="Right" Margin="0,0,20,0" Grid.Row="8" VerticalAlignment="Center" Width="75" Command="{Binding clearFilterCommand}"/>
 
         </Grid>
 
         <StackPanel Grid.Column="1" Grid.Row="2" >
-            <Button Content="Добавить" Margin="20" Height="30"/>
-            <Button Content="Измменить" Margin="20" Height="30"/>
-            <Button Content="Удалить" Margin="20" Height="30"/>
+            <Button Content="Добавить" Margin="20" Height="30" Command="{Binding AddTaskCommand}"/>
+            <Button Content="Изменить" Margin="20" Height="30" Command="{Binding EditTaskCommand}"/>
+            <Button Content="Удалить" Margin="20" Height="30" Command="{Binding RemoveTaskCommand}"/>
 
 
         </StackPanel>

@@ -29,6 +29,7 @@ namespace Traineeorganizer.Model
         {
             Active = false;
             Prior = Priority.Low;
+            Active = false;
             Name = "";
         }
     }

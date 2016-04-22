@@ -66,14 +66,24 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Command\CommandNP.cs" />
+    <Compile Include="Infrastructure\DelegateClass.cs" />
     <Compile Include="ModelView\AllItViewModel.cs" />
     <Compile Include="ModelView\BaseViewModel.cs" />
+    <Compile Include="ModelView\EditTheoryModelView.cs" />
     <Compile Include="ModelView\MainViewModel.cs" />
+    <Compile Include="Model\AllTasks.cs" />
     <Compile Include="UserControls\AnalogClock.xaml.cs">
       <DependentUpon>AnalogClock.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\AllTasksView.xaml.cs">
       <DependentUpon>AllTasksView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditingTask.xaml.cs">
+      <DependentUpon>EditingTask.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditTheory.xaml.cs">
+      <DependentUpon>EditTheory.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MainGridView.xaml.cs">
       <DependentUpon>MainGridView.xaml</DependentUpon>
@@ -95,6 +105,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\AllTasksView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\EditingTask.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\EditTheory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

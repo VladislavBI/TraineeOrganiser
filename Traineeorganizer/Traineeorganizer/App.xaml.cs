@@ -15,11 +15,11 @@ namespace Traineeorganizer
     /// </summary>
     public partial class App : Application
     {
-        void OnStartup(object sender, StartupEventArgs e)
+          void OnStartup(object sender, StartupEventArgs e)
         {
 
             MainWindow view = new MainWindow();
-            AllItViewModel alt=new AllItViewModel(); 
+            AllItViewModel alt=new AllItViewModel(new AllTasks()); 
 	        
             
             MainViewModel viewModel = new MainViewModel(alt);
