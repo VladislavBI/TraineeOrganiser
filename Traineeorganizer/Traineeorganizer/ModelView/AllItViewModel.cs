@@ -23,6 +23,7 @@ namespace Traineeorganizer.ModelView
         { get{return at.amvDateTable;}
             set
             {
+               
                 if(at.amvDateTable!=value)
                     at.amvDateTable=value;
                 OnPropertyChanged("AMVDateTable");
@@ -130,6 +131,8 @@ namespace Traineeorganizer.ModelView
         public ICommand AddTaskCommand { get; set; }
         public ICommand EditTaskCommand { get; set; }
         public ICommand RemoveTaskCommand { get; set; }
+
+        public ICommand ChangeStatusCommand { get; set; }
         #endregion
 
         public AllItViewModel(AllTasks task)
@@ -140,6 +143,7 @@ namespace Traineeorganizer.ModelView
             AddTaskCommand = new CommandNP(arg => AddTaskMethod());
             EditTaskCommand = new CommandNP(arg => EditTaskMethod());
             RemoveTaskCommand = new CommandNP(arg => RemoveTaskMethod());
+            ChangeStatusCommand = new CommandNP(arg => ChangeTaskStatusMethod());
 
             at = task;
 
@@ -158,6 +162,7 @@ namespace Traineeorganizer.ModelView
             AMVDateTable.Columns.Add("Всего очков", typeof(int));
             AMVDateTable.Columns.Add("Приоритет", typeof(Priority));
             AMVDateTable.Columns.Add("Статус", typeof(bool));
+            AMVDateTable.Columns.Add("Id", typeof(int));
         }
         void CreateLists(bool all)
         {
@@ -215,6 +220,7 @@ namespace Traineeorganizer.ModelView
                 row[2] = tmp.Th.Points;
                 row[3] = tmp.Prior;
                 row[4] = tmp.Active;
+                row[5] = tmp.TrTaskId;
                 AMVDateTable.Rows.Add(row);
             }
         }
@@ -225,12 +231,23 @@ namespace Traineeorganizer.ModelView
             this.ChBPr = false;
             this.ChBTh = false;
         }
-        #region Command
+
+        /// <summary>
+        /// Проверка на изменение статуса
+        /// </summary>
+        /// <param name="val">DataTable из View</param>
+        /// <returns></returns>
+
+
+        #region Methods
         void FilterMethod()
         {
             CreateLists(false);
         }
 
+        /// <summary>
+        /// Пересоздает список тасков и заново заполняет DataGrid
+        /// </summary>
         void ClearFilterMethod()
         {
             CreateLists(true);
@@ -249,13 +266,45 @@ namespace Traineeorganizer.ModelView
 
         void EditTaskMethod()
         {
-            //Edit method - new more windows
+            TrTask t;
+            string thName;
+            using(TraineeContext cnt=new TraineeContext())
+            {
+                int i=Convert.ToInt32(AMVDateTable.Rows[DGPsSelectedIndex]["Id"]);
+                t = cnt.TrTasks.Where(x => x.TrTaskId ==i ).Include(tt=>tt.Th).FirstOrDefault();
+                thName=t.Th.Name;
+            }
+            EditTheory View = new EditTheory();
+            EditTheoryModelView modelView = new EditTheoryModelView(t, thName);
+            View.DataContext = modelView;
+            View.ShowDialog();
         }
         void RemoveTaskMethod()
         {
             DGPsSelectedIndex = 0;
             //RemoveMethod - wait for further realization
         }
+
+        /// <summary>
+        /// Изменяет статус задачи
+        /// </summary>
+        void ChangeTaskStatusMethod()
+        {
+            if (DGPsSelectedIndex < AMVDateTable.Rows.Count)
+           {
+                using (TraineeContext trC = new TraineeContext())
+                {
+                    string name = AMVDateTable.Rows[DGPsSelectedIndex][0].ToString();
+                    TrTask tr = trC.TrTasks.Where(
+                        x => x.Name == name).FirstOrDefault();
+
+                    tr.Active = !tr.Active;
+                    trC.SaveChanges();
+                }
+                ClearFilterMethod();
+           }
+        }
+
         #endregion
     }
 }

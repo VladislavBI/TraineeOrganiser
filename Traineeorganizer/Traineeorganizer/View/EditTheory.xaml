@@ -24,6 +24,7 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
         <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="{Binding HeaderText}" VerticalAlignment="Center" Grid.ColumnSpan="2"/>
@@ -36,16 +37,24 @@
         <ComboBox Grid.Column="1" HorizontalAlignment="Center" 
                   Grid.Row="2" VerticalAlignment="Center" Width="120"
                   ItemsSource="{Binding ThemesList}" 
-                  SelectedValue="{Binding SelectedTheme, Mode=OneWayToSource}"
+                  SelectedValue="{Binding SelectedTheme, Mode=TwoWay}"
                   IsSynchronizedWithCurrentItem="True"/>
 
         <TextBlock HorizontalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="Приоритет" VerticalAlignment="Center"/>
         <ComboBox Grid.Column="1" HorizontalAlignment="Center" Grid.Row="3" VerticalAlignment="Center" Width="120"
                   ItemsSource="{Binding Source={StaticResource PriorityEnum}}"
-                  SelectedValue="{Binding SelectedPriority, Mode=OneWayToSource}"
+                  SelectedValue="{Binding SelectedPriority, Mode=TwoWay}"
                   IsSynchronizedWithCurrentItem="True"/>
 
-        <Button Content="Применить" HorizontalAlignment="Center" Grid.Row="4" VerticalAlignment="Center" Width="75" Command="{Binding AcceptCommand}" Click="Button_Click"/>
-        <Button Content="Выход" HorizontalAlignment="Center" Grid.Row="4" VerticalAlignment="Center" Width="74" Grid.Column="1" Click="Button_Click" />
-    </Grid>
+        <CheckBox Grid.Column="1" HorizontalAlignment="Center" 
+                  Grid.Row="4" VerticalAlignment="Center" IsChecked="{Binding SelectedActive}"/>
+
+        
+
+        <TextBlock HorizontalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="Статус" VerticalAlignment="Center" Margin="35,22,51,26"/>
+
+
+        <Button Content="Применить" HorizontalAlignment="Center" Grid.Row="5" VerticalAlignment="Center" Width="75" Command="{Binding AcceptCommand}" Click="Button_Click"/>
+        <Button Content="Выход" HorizontalAlignment="Center" Grid.Row="5" VerticalAlignment="Center" Width="74" Grid.Column="1" Click="Button_Click" />
+        </Grid>
 </Window>
